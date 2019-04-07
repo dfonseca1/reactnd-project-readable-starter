@@ -8,12 +8,6 @@ class Posts extends Component {
     return (
       <div>
         <h3>Post List</h3>
-        {/*         
-        {this.props.posts.map(post => (
-          <li key={post.id}>
-            <Post id={post.id} />
-          </li>
-        ))} */}
         {Object.keys(this.props.posts).map(id => (
           <li key={id}>
            <Link to={`/post/${this.props.posts[id].id}`} className="tweet">
