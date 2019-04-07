@@ -4,8 +4,7 @@ import { connect } from "react-redux";
 
 class PostDetailPage extends Component {
   render() {
-    let { post } = this.props.post;
-  console.log("PostDetailPage.Render.Post", post);
+    let { post } = this.props;
 
     return (
       <article>
@@ -31,11 +30,7 @@ class PostDetailPage extends Component {
 
 function mapStateToProps({ posts }, props) {
   const { id } = props.match.params;
-  console.log("PostDetailPage.MapStateToProps.Posts", posts);
-  let post = posts.posts.filter(post => post.id === id);
-  console.log("PostDetailPage.MapStateToProps.Post", post);
-  console.log("PostDetailPage.MapStateToProps.Params", props.match.params);
-  console.log("PostDetailPage.MapStateToProps.Id", id);
+  let post = posts.posts.find(post => post.id === id);
   return {
     post
   };
