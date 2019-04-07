@@ -30,6 +30,7 @@ class PostDetailPage extends Component {
 
 function mapStateToProps({ posts }, props) {
   const { id } = props.match.params;
+
   let post = posts.posts.find(post => post.id === id);
   return {
     post
