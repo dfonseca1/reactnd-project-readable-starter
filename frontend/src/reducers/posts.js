@@ -1,4 +1,4 @@
-import { RECEIVE_POSTS } from "../actions/posts";
+import { RECEIVE_POSTS, RECEIVE_POSTS_CATEGORY } from "../actions/posts";
 
 export default function posts(state = {}, action) {
   switch (action.type) {
@@ -7,6 +7,10 @@ export default function posts(state = {}, action) {
         ...state,
         ...action.posts
       };
+     case RECEIVE_POSTS_CATEGORY:
+      return {
+        ...action.posts
+      } 
     default:
       return state;
   }
