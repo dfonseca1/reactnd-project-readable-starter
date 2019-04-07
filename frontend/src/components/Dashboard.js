@@ -42,7 +42,23 @@ class Dashboard extends Component {
 }
 
 function mapStateToProps({ posts }) {
-  return posts;
+  // console.log("Dashboard.mapStateToProps.state", state)
+
+  // let {posts} = state;
+  console.log("Dashboard.mapStateToProps.posts", posts);
+
+  // const postsByVoteScore = !posts.length > 0 ? [] :  posts.sort(
+  //   (a, b,) => posts[b].voteScore - posts[a].voteScore
+  // );
+  // return { posts: postsByVoteScore };
+  const postsByVoteScore =
+    posts.length > 0
+      ? posts.sort((a, b) => posts[b].voteScore - posts[a].voteScore)
+      : posts;
+
+  console.log("Dashboard.mapStateToProps.postsByVoteScore", postsByVoteScore);
+
+  return postsByVoteScore;
 }
 
 export default connect(mapStateToProps)(Dashboard);
