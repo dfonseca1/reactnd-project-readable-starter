@@ -1,10 +1,24 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-// import { Container } from './styles';
+import { formatDate } from "../utils/helpers";
+import { getCommentsByPost } from "../actions/comments";
 
 class PostDetailPage extends Component {
+  componentDidMount() {
+    const { post } = this.props;
+    this.props.dispatch(getCommentsByPost(post));
+  }
+
+  sortByVoteScore(comments) {
+    return comments.sort((a, b) => b.voteScore - a.voteScore);
+  }
+
   render() {
-    let { post } = this.props;
+    let { post, comments } = this.props;
+    console.log("PostDetailPage.Props", this.props);
+    console.log("PostDetailPage.Render.Comments", comments);
+
+    const sortedComments = this.sortByVoteScore(comments);
 
     return (
       <article>
@@ -14,13 +28,25 @@ class PostDetailPage extends Component {
           </div>
           <div className="post-info">
             <h3>Title: {post.title}</h3>
-            <span> {post.category}</span>
+            <span>Category:{post.category}</span>
             <p>
-              Submitted {post.timestamp} ago by {post.author}
+              Submitted {formatDate(post.timestamp)} by {post.author}
             </p>
+            <span>Body:</span>
+            <p>{post.body}</p>
             <p>
               <span>{post.commentCount} comments</span>
             </p>
+            <h3>Comments</h3>
+            {sortedComments.length > 0 &&
+              sortedComments.map(comment => (
+                <li key={comment.id}>
+                  <p>{comment.body}</p>
+                  <p>creation date:{comment.timestamp}</p>
+                  <p>author:{comment.author}</p>
+                  <p>vote score:{comment.voteScore}</p>
+                </li>
+              ))}
           </div>
         </div>
       </article>
@@ -28,12 +54,18 @@ class PostDetailPage extends Component {
   }
 }
 
-function mapStateToProps({ posts }, props) {
+function mapStateToProps(state, props) {
   const { id } = props.match.params;
 
-  let post = posts.posts.find(post => post.id === id);
+  let post =
+    state.posts.posts !== undefined
+      ? state.posts.posts.find(post => post.id === id)
+      : {};
+  let commentsByPost =
+    state.comments.comments !== undefined ? state.comments.comments : [];
   return {
-    post
+    post,
+    comments: commentsByPost
   };
 }
 
