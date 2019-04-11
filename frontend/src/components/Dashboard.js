@@ -4,8 +4,6 @@ import Posts from "./Posts";
 import Categories from "./Categories";
 import { connect } from "react-redux";
 
-// import { Container } from './styles';
-
 const categories = [
   {
     name: "react",
@@ -22,9 +20,35 @@ const categories = [
 ];
 
 class Dashboard extends Component {
+  state = {
+    sortBy: "voteScore"
+  };
+  handleChangeSortBy = e => {
+    const value = e.target.value;
+
+    this.setState(() => ({
+      sortBy: value
+    }));
+  };
+
+  sortBySelectedMethod(posts) {
+    switch (this.state.sortBy) {
+      case "voteScore":
+        return posts.sort((a, b) => b.voteScore - a.voteScore);
+      case "creationDate":
+        return posts.sort((a, b) => b.timestamp - a.timestamp);
+      default:
+        return posts;
+    }
+  }
+
   render() {
     console.log("Dashboard.Props", this.props);
 
+    const sortedPosts =
+      this.props.posts !== undefined && this.props.posts.length > 1
+        ? this.sortBySelectedMethod(this.props.posts)
+        : this.props.posts;
     return (
       <div>
         <div>
@@ -34,31 +58,24 @@ class Dashboard extends Component {
         <div>
           <Link to="/new">New Post</Link>
         </div>
+        <div>
+          <span>Sort by:</span>
+          <select onChange={e => this.handleChangeSortBy(e)} name="sortby">
+            <option value="voteScore" defaultValue>
+              Vote Score
+            </option>
+            <option value="creationDate">Creation Date</option>
+          </select>
+        </div>
 
-        <div>{this.props.posts && <Posts posts={this.props.posts} />}</div>
+        <div>{sortedPosts && <Posts posts={sortedPosts} />}</div>
       </div>
     );
   }
 }
 
 function mapStateToProps({ posts }) {
-  // console.log("Dashboard.mapStateToProps.state", state)
-
-  // let {posts} = state;
-  console.log("Dashboard.mapStateToProps.posts", posts);
-
-  // const postsByVoteScore = !posts.length > 0 ? [] :  posts.sort(
-  //   (a, b,) => posts[b].voteScore - posts[a].voteScore
-  // );
-  // return { posts: postsByVoteScore };
-  const postsByVoteScore =
-    posts.length > 0
-      ? posts.sort((a, b) => posts[b].voteScore - posts[a].voteScore)
-      : posts;
-
-  console.log("Dashboard.mapStateToProps.postsByVoteScore", postsByVoteScore);
-
-  return postsByVoteScore;
+  return posts;
 }
 
 export default connect(mapStateToProps)(Dashboard);
