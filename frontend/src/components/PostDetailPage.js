@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { formatDate } from "../utils/helpers";
-import { getCommentsByPost } from "../actions/comments";
+import { getCommentsByPost, addCommentForPost } from "../actions/comments";
+import { v4 } from "uuid";
 
 class PostDetailPage extends Component {
+  state = {
+    comment: ""
+  };
+
   componentDidMount() {
     const { post } = this.props;
     this.props.dispatch(getCommentsByPost(post));
@@ -11,6 +16,31 @@ class PostDetailPage extends Component {
 
   sortByVoteScore(comments) {
     return comments.sort((a, b) => b.voteScore - a.voteScore);
+  }
+
+  handleChange = e => {
+    const name = e.target.name;
+    const value = e.target.value;
+
+    this.setState(() => ({
+      [name]: value
+    }));
+  };
+
+  handleNewCommentSubmit = (e) => {
+    e.preventDefault();
+    console.log("PostDetailPage.HandleNewComment.props", this.props);
+
+    const { post } = this.props;
+    const newComment = {
+      id: v4(),
+      timestamp: Date.now(),
+      body: this.state.comment,
+      author: post.author,
+      parentId: post.id
+    };
+
+     this.props.dispatch(addCommentForPost(newComment))
   }
 
   render() {
@@ -37,16 +67,30 @@ class PostDetailPage extends Component {
             <p>
               <span>{post.commentCount} comments</span>
             </p>
-            <h3>Comments</h3>
-            {sortedComments.length > 0 &&
-              sortedComments.map(comment => (
-                <li key={comment.id}>
-                  <p>{comment.body}</p>
-                  <p>creation date:{comment.timestamp}</p>
-                  <p>author:{comment.author}</p>
-                  <p>vote score:{comment.voteScore}</p>
-                </li>
-              ))}
+            <div>
+              <h3>Comments</h3>
+              {sortedComments.length > 0 &&
+                sortedComments.map(comment => (
+                  <li key={comment.id}>
+                    <p>{comment.body}</p>
+                    <p>creation date:{comment.timestamp}</p>
+                    <p>author:{comment.author}</p>
+                    <p>vote score:{comment.voteScore}</p>
+                  </li>
+                ))}
+            </div>
+            <div>
+              <form onSubmit={this.handleNewCommentSubmit}>
+                <span>New Comment:</span>
+                <input
+                  type="text"
+                  name="comment"
+                  value={this.state.comment}
+                  onChange={this.handleChange}
+                />
+                <button>Comment!</button>
+              </form>
+            </div>
           </div>
         </div>
       </article>
